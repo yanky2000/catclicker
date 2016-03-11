@@ -8,45 +8,69 @@
       image: ["img/1.jpg", "img/2.jpg", "img/3.jpg", "img/4.jpg", "img/5.jpg"]
     };
     controller = {
-      init: function(catDefault) {
-        if (catDefault == null) {
-          catDefault = 0;
+      init: function() {
+        var clicks, i, j, len, ref;
+        ref = model.name;
+        for (i = j = 0, len = ref.length; j < len; i = ++j) {
+          clicks = ref[i];
+          model.clicksCount[i] = 0;
         }
-        model.init(catDefault);
-        return view.init(catDefault);
+        controller.changeCat();
+        return controller.addClicks();
       },
       changeCat: function(catId) {
-        var catToShow;
-        catToShow = model[catId];
-        return view.render();
+        return $('button').click(function(e) {
+          var selectedCatNo;
+          selectedCatNo = $(this).data('cat-no');
+          return view.renderAll(selectedCatNo);
+        });
       },
       addClicks: function(catId) {
-        catId.clicksCount++;
-        return view.render();
+        return $('img').click(function(e) {
+          var selectedCatNo;
+          selectedCatNo = $(this).data('cat-image-no');
+          model.clicksCount[selectedCatNo]++;
+          return view.renderElement.clicks(selectedCatNo);
+        });
       }
     };
     view = {
-      init: function() {
-        var buttons, catButtonName, i, index, len, ref;
-        buttons = [];
-        ref = model.name;
-        for (index = i = 0, len = ref.length; i < len; index = ++i) {
-          catButtonName = ref[index];
-          buttons[index] = "<li><button data-button-no=" + index + ">" + catButtonName + "</button></li>";
+      init: function(startCatIndex) {
+        var buttons, catButtonName, index, j, len, ref;
+        if (startCatIndex == null) {
+          startCatIndex = 0;
         }
-        $('body').append(buttons);
-        $('p.hello').append(buttons);
-        $('ul').append(buttons);
-        $('ul.buttons').append(buttons);
-        return $(".buttons").append(buttons);
+        buttons = [];
+        model.name.sort();
+        ref = model.name;
+        for (index = j = 0, len = ref.length; j < len; index = ++j) {
+          catButtonName = ref[index];
+          buttons[index] = "<li><button data-cat-no=" + index + ">" + catButtonName + "</button></li>";
+        }
+        $(".buttons").append(buttons);
+        return view.renderAll(startCatIndex);
       },
-      render: function(catName, catClicks, catImage) {
-        $('#catName').text(catName);
-        $('#catClicks').text("Number of clicks: " + catClicks);
-        return $('#catImage').attr('scr', catImage);
+      renderAll: function(indexToDisplay) {
+        view.renderElement.name(indexToDisplay);
+        view.renderElement.clicks(indexToDisplay);
+        return view.renderElement.image(indexToDisplay);
+      },
+      renderElement: {
+        name: function(indexToDisplay) {
+          return $('.catName').text(model.name[indexToDisplay]);
+        },
+        clicks: function(indexToDisplay) {
+          return $('.catClicks').text("Number of clicks: " + model.clicksCount[indexToDisplay]);
+        },
+        image: function(indexToDisplay) {
+          return $('.catImage').attr({
+            src: model.image[indexToDisplay]
+          }).data("cat-image-no", indexToDisplay);
+        }
       }
     };
-    return view.init();
+    view.init();
+    return controller.init();
   })();
 
 }).call(this);
