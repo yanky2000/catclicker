@@ -28,7 +28,7 @@ do ->
 
 
 	view =
-		init: (catDefault) ->
+		init: () ->
 			# render list of buttons
 			# fragment = $(document).createDocumentFragment()
 			buttons= []

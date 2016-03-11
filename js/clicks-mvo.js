@@ -26,7 +26,7 @@
       }
     };
     view = {
-      init: function(catDefault) {
+      init: function() {
         var buttons, catButtonName, i, index, len, ref;
         buttons = [];
         ref = model.name;
