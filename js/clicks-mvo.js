@@ -8,69 +8,89 @@
       image: ["img/1.jpg", "img/2.jpg", "img/3.jpg", "img/4.jpg", "img/5.jpg"]
     };
     controller = {
-      init: function() {
-        var clicks, i, j, len, ref;
+      dataPrep: function() {
+        var clicks, i, j, len, ref, results;
+        model.name.sort();
         ref = model.name;
+        results = [];
         for (i = j = 0, len = ref.length; j < len; i = ++j) {
           clicks = ref[i];
-          model.clicksCount[i] = 0;
+          results.push(model.clicksCount[i] = 0);
         }
-        controller.changeCat();
-        return controller.addClicks();
+        return results;
       },
-      changeCat: function(catId) {
+      giveNamesToButtons: function() {
+        var buttons, catButtonName, index, j, len, ref;
+        buttons = [];
+        ref = model.name;
+        for (index = j = 0, len = ref.length; j < len; index = ++j) {
+          catButtonName = ref[index];
+          buttons[index] = "<li><button data-cat-no=" + index + ">" + catButtonName + "</button></li>";
+        }
+        return buttons;
+      },
+      changeCatEvent: function(catId) {
         return $('button').click(function(e) {
           var selectedCatNo;
           selectedCatNo = $(this).data('cat-no');
-          return view.renderAll(selectedCatNo);
+          return view.renderCatDisplay(selectedCatNo);
         });
       },
-      addClicks: function(catId) {
+      changeClicksEvent: function(catId) {
         return $('img').click(function(e) {
           var selectedCatNo;
           selectedCatNo = $(this).data('cat-image-no');
           model.clicksCount[selectedCatNo]++;
           return view.renderElement.clicks(selectedCatNo);
         });
+      },
+      get: function(propName, index) {
+        switch (propName) {
+          case 'name':
+            return model.name[index];
+          case 'clicks':
+            return model.clicksCount[index];
+          case 'image':
+            return model.image[index];
+        }
       }
     };
     view = {
-      init: function(startCatIndex) {
-        var buttons, catButtonName, index, j, len, ref;
-        if (startCatIndex == null) {
-          startCatIndex = 0;
+      init: function(startIndex) {
+        var catNames;
+        if (startIndex == null) {
+          startIndex = 0;
         }
-        buttons = [];
-        model.name.sort();
-        ref = model.name;
-        for (index = j = 0, len = ref.length; j < len; index = ++j) {
-          catButtonName = ref[index];
-          buttons[index] = "<li><button data-cat-no=" + index + ">" + catButtonName + "</button></li>";
-        }
-        $(".buttons").append(buttons);
-        return view.renderAll(startCatIndex);
+        controller.dataPrep();
+        catNames = controller.giveNamesToButtons();
+        this.renderElement.buttons(catNames);
+        this.renderCatDisplay(startIndex);
+        controller.changeCatEvent();
+        return controller.changeClicksEvent();
       },
-      renderAll: function(indexToDisplay) {
-        view.renderElement.name(indexToDisplay);
-        view.renderElement.clicks(indexToDisplay);
-        return view.renderElement.image(indexToDisplay);
+      renderCatDisplay: function(indexToDisplay) {
+        this.renderElement.name(indexToDisplay);
+        this.renderElement.clicks(indexToDisplay);
+        return this.renderElement.image(indexToDisplay);
       },
       renderElement: {
-        name: function(indexToDisplay) {
-          return $('.catName').text(model.name[indexToDisplay]);
+        buttons: function(buttons) {
+          return $(".buttons").append(buttons);
         },
-        clicks: function(indexToDisplay) {
-          return $('.catClicks').text("Number of clicks: " + model.clicksCount[indexToDisplay]);
+        name: function(indexToDisplay) {
+          return $('.catName').text(controller.get('name', indexToDisplay));
         },
         image: function(indexToDisplay) {
           return $('.catImage').attr({
-            src: model.image[indexToDisplay]
+            src: controller.get('image', indexToDisplay)
           }).data("cat-image-no", indexToDisplay);
+        },
+        clicks: function(indexToDisplay) {
+          return $('.catClicks').text("Number of clicks: " + (controller.get('clicks', indexToDisplay)));
         }
       }
     };
-    view.init();
-    return controller.init();
+    return view.init();
   })();
 
 }).call(this);

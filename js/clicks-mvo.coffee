@@ -13,53 +13,59 @@ do ->
 
 
 	controller =
-		init: ->
+		dataPrep: ->
+			#Organize initial data
+			model.name.sort()
+
 			for clicks,i in model.name
 				model.clicksCount[i] = 0
 
-			controller.changeCat()
-			controller.addClicks()
 
+		giveNamesToButtons: ->	# Give initial cat names to buttons
+			buttons= []
+			for catButtonName, index in model.name
+				buttons[index] = "<li><button data-cat-no=#{index}>#{catButtonName}</button></li>"
+			buttons
 
-		changeCat: (catId)->
+		changeCatEvent: (catId)->
 			#Added button clicks event handlers
 			$('button').click (e)->
 				selectedCatNo = $(@).data('cat-no')
-				view.renderAll(selectedCatNo)
+				view.renderCatDisplay(selectedCatNo)
 
-
-		addClicks: (catId)->
+		changeClicksEvent: (catId)->
 			#Incrementing clicks on images
 			$('img').click (e)->
 				selectedCatNo = $(@).data('cat-image-no')
 				model.clicksCount[selectedCatNo]++
-
 				view.renderElement.clicks(selectedCatNo)
-
-
+		
+		get: (propName, index) ->
+			switch propName
+				when 'name' then model.name[index]
+				when 'clicks' then model.clicksCount[index]
+				when 'image' then model.image[index]
 
 	view =
-		init: (startCatIndex = 0) ->
+		init: (startIndex=0)->
 			# render defaul cat data and buttons
-			buttons= []
-			model.name.sort()
-			for catButtonName, index in model.name
-				buttons[index] = "<li><button data-cat-no=#{index}>#{catButtonName}</button></li>"
+			controller.dataPrep()
+			catNames = controller.giveNamesToButtons()
+			@.renderElement.buttons(catNames)
+			@.renderCatDisplay(startIndex)
+			controller.changeCatEvent()
+			controller.changeClicksEvent()
 
-			$(".buttons").append(buttons)
-
-			view.renderAll(startCatIndex)
-
-		renderAll: (indexToDisplay)->
-			view.renderElement.name(indexToDisplay)
-			view.renderElement.clicks(indexToDisplay)
-			view.renderElement.image(indexToDisplay)
+		renderCatDisplay: (indexToDisplay)->
+			@.renderElement.name(indexToDisplay)
+			@.renderElement.clicks(indexToDisplay)
+			@.renderElement.image(indexToDisplay)
 
 		renderElement:
-			name: (indexToDisplay)-> $('.catName').text model.name[indexToDisplay]
-			clicks: (indexToDisplay)-> $('.catClicks').text "Number of clicks: #{model.clicksCount[indexToDisplay]}"
-			image: (indexToDisplay)-> $('.catImage').attr(src: model.image[indexToDisplay]).data("cat-image-no", indexToDisplay)
+			buttons: (buttons) -> $(".buttons").append(buttons)
+			name: (indexToDisplay)-> $('.catName').text controller.get('name', indexToDisplay)
+			image: (indexToDisplay)-> $('.catImage').attr(src: controller.get('image', indexToDisplay)).data("cat-image-no", indexToDisplay)
+			clicks: (indexToDisplay)-> $('.catClicks').text "Number of clicks: #{controller.get('clicks', indexToDisplay)}"
 
 	view.init()
-	controller.init()
 
