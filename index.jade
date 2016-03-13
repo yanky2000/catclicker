@@ -5,6 +5,7 @@ head
 	title Document
 
 	link(rel="stylesheet", href="styles.css")
+	link(rel="stylesheet", href="new-style.css")
 	<script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
 	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 
@@ -21,6 +22,21 @@ body
 		p.catClicks
 		img.catImage
 
+	.admin-wrap
+		button#admin Admin
+
+		.admin-control
+			label Cat Name
+			input#admin-cat-name(text) 
+			
+			label Cat clicks
+			input#admin-cat-clicks(text) 		
+			
+			label Cat Image
+			input#admin-cat-image(text) 
+
+			button#cancel Cancel
+			button#save Save
 
 
 

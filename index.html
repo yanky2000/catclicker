@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <title>Document</title>
-  <link rel="stylesheet" href="styles.css"/><script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="new-style.css"/><script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
   <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 </head>
 <body>
@@ -14,6 +15,19 @@
   <div class="display-wrap">
     <h1 class="catName"></h1>
     <p class="catClicks"></p><img class="catImage"/>
+  </div>
+  <div class="admin-wrap">
+    <button id="admin">Admin</button>
+    <div class="admin-control">
+      <label>Cat Name</label>
+      <input id="admin-cat-name" text="text"/>
+      <label>Cat clicks</label>
+      <input id="admin-cat-clicks" text="text"/>
+      <label>Cat Image</label>
+      <input id="admin-cat-image" text="text"/>
+      <button id="cancel">Cancel</button>
+      <button id="save">Save</button>
+    </div>
   </div>
   <script src="js/clicks-mvo.js"></script>
 </body>

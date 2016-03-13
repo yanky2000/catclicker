@@ -12,3 +12,10 @@ img {
 p {
   margin: auto;
 }
+
+.admin-wrap
+	display: flex;
+
+.admin-control
+	display: block;
+	/*flex-direction: column*/

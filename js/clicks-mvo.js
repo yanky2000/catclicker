@@ -25,12 +25,12 @@
         ref = model.name;
         for (index = j = 0, len = ref.length; j < len; index = ++j) {
           catButtonName = ref[index];
-          buttons[index] = "<li><button data-cat-no=" + index + ">" + catButtonName + "</button></li>";
+          buttons[index] = "<li><button class='catNameButton' data-cat-no=" + index + ">" + catButtonName + "</button></li>";
         }
         return buttons;
       },
       changeCatEvent: function(catId) {
-        return $('button').click(function(e) {
+        return $('.catNameButton').click(function(e) {
           var selectedCatNo;
           selectedCatNo = $(this).data('cat-no');
           return view.renderCatDisplay(selectedCatNo);

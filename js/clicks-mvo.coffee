@@ -24,12 +24,12 @@ do ->
 		giveNamesToButtons: ->	# Give initial cat names to buttons
 			buttons= []
 			for catButtonName, index in model.name
-				buttons[index] = "<li><button data-cat-no=#{index}>#{catButtonName}</button></li>"
+				buttons[index] = "<li><button class='catNameButton' data-cat-no=#{index}>#{catButtonName}</button></li>"
 			buttons
 
 		changeCatEvent: (catId)->
 			#Added button clicks event handlers
-			$('button').click (e)->
+			$('.catNameButton').click (e)->
 				selectedCatNo = $(@).data('cat-no')
 				view.renderCatDisplay(selectedCatNo)
 
