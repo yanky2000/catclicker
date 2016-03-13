@@ -1,6 +1,7 @@
 do ->
 	'use strict'
 	model =
+		selectedCatNo: 0
 		name: ['Alice', 'Joe', 'Black', 'Jerry', 'Grey']
 		clicksCount: [0]
 		image: [
@@ -10,6 +11,7 @@ do ->
 			"img/4.jpg"
 			"img/5.jpg"
 		]
+		buttons: []
 
 
 	controller =
@@ -22,29 +24,53 @@ do ->
 
 
 		giveNamesToButtons: ->	# Give initial cat names to buttons
-			buttons= []
 			for catButtonName, index in model.name
-				buttons[index] = "<li><button class='catNameButton' data-cat-no=#{index}>#{catButtonName}</button></li>"
-			buttons
+				model.buttons[index] = "<li><button class='catNameButton' data-cat-no=#{index}>#{catButtonName}</button></li>"
+			model.buttons
 
 		changeCatEvent: (catId)->
 			#Added button clicks event handlers
 			$('.catNameButton').click (e)->
-				selectedCatNo = $(@).data('cat-no')
-				view.renderCatDisplay(selectedCatNo)
+				model.selectedCatNo = $(@).data('cat-no')
+				view.renderCatDisplay(model.selectedCatNo)
+				controller.fillAdminPanel()
 
 		changeClicksEvent: (catId)->
 			#Incrementing clicks on images
 			$('img').click (e)->
-				selectedCatNo = $(@).data('cat-image-no')
-				model.clicksCount[selectedCatNo]++
-				view.renderElement.clicks(selectedCatNo)
-		
+				# selectedCatNo = $(@).data('cat-image-no')
+				model.clicksCount[model.selectedCatNo]++
+				view.renderElement.clicks(model.selectedCatNo)
+				controller.fillAdminPanel()
+
 		get: (propName, index) ->
 			switch propName
 				when 'name' then model.name[index]
 				when 'clicks' then model.clicksCount[index]
 				when 'image' then model.image[index]
+
+		adminMode: ->
+			$('#admin').click ->
+				$('.admin-control').show()
+				controller.fillAdminPanel()
+
+			$('#cancel').click ->
+				$('.admin-control').hide()
+
+			# should use separate method for this
+			$('#save').click (catId, newCatValues)->
+				model.name[model.selectedCatNo] = $('#admin-cat-name').val()
+				view.renderElement.name(model.selectedCatNo)
+
+				#Change button name
+				$(".catNameButton[data-cat-no='#{model.selectedCatNo}']").text(model.name[model.selectedCatNo])
+				$('.admin-control').hide()
+
+		fillAdminPanel: ->
+				#TODO: inputs should contain data for currently selected cat
+				view.renderAdminPanel(model.name[model.selectedCatNo], model.clicksCount[model.selectedCatNo], model.image[model.selectedCatNo])
+
+
 
 	view =
 		init: (startIndex=0)->
@@ -55,6 +81,7 @@ do ->
 			@.renderCatDisplay(startIndex)
 			controller.changeCatEvent()
 			controller.changeClicksEvent()
+			controller.adminMode()
 
 		renderCatDisplay: (indexToDisplay)->
 			@.renderElement.name(indexToDisplay)
@@ -67,5 +94,12 @@ do ->
 			image: (indexToDisplay)-> $('.catImage').attr(src: controller.get('image', indexToDisplay)).data("cat-image-no", indexToDisplay)
 			clicks: (indexToDisplay)-> $('.catClicks').text "Number of clicks: #{controller.get('clicks', indexToDisplay)}"
 
+		renderAdminPanel: (catName, catClicks, catImage)->
+			$('#admin-cat-name').val(catName)
+			$('#admin-cat-clicks').val(catClicks)
+			$('#admin-cat-image').val(catImage)
+
+
 	view.init()
 
+	# when

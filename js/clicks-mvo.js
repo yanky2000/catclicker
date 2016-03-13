@@ -3,9 +3,11 @@
     'use strict';
     var controller, model, view;
     model = {
+      selectedCatNo: 0,
       name: ['Alice', 'Joe', 'Black', 'Jerry', 'Grey'],
       clicksCount: [0],
-      image: ["img/1.jpg", "img/2.jpg", "img/3.jpg", "img/4.jpg", "img/5.jpg"]
+      image: ["img/1.jpg", "img/2.jpg", "img/3.jpg", "img/4.jpg", "img/5.jpg"],
+      buttons: []
     };
     controller = {
       dataPrep: function() {
@@ -20,28 +22,26 @@
         return results;
       },
       giveNamesToButtons: function() {
-        var buttons, catButtonName, index, j, len, ref;
-        buttons = [];
+        var catButtonName, index, j, len, ref;
         ref = model.name;
         for (index = j = 0, len = ref.length; j < len; index = ++j) {
           catButtonName = ref[index];
-          buttons[index] = "<li><button class='catNameButton' data-cat-no=" + index + ">" + catButtonName + "</button></li>";
+          model.buttons[index] = "<li><button class='catNameButton' data-cat-no=" + index + ">" + catButtonName + "</button></li>";
         }
-        return buttons;
+        return model.buttons;
       },
       changeCatEvent: function(catId) {
         return $('.catNameButton').click(function(e) {
-          var selectedCatNo;
-          selectedCatNo = $(this).data('cat-no');
-          return view.renderCatDisplay(selectedCatNo);
+          model.selectedCatNo = $(this).data('cat-no');
+          view.renderCatDisplay(model.selectedCatNo);
+          return controller.fillAdminPanel();
         });
       },
       changeClicksEvent: function(catId) {
         return $('img').click(function(e) {
-          var selectedCatNo;
-          selectedCatNo = $(this).data('cat-image-no');
-          model.clicksCount[selectedCatNo]++;
-          return view.renderElement.clicks(selectedCatNo);
+          model.clicksCount[model.selectedCatNo]++;
+          view.renderElement.clicks(model.selectedCatNo);
+          return controller.fillAdminPanel();
         });
       },
       get: function(propName, index) {
@@ -53,6 +53,24 @@
           case 'image':
             return model.image[index];
         }
+      },
+      adminMode: function() {
+        $('#admin').click(function() {
+          $('.admin-control').show();
+          return controller.fillAdminPanel();
+        });
+        $('#cancel').click(function() {
+          return $('.admin-control').hide();
+        });
+        return $('#save').click(function(catId, newCatValues) {
+          model.name[model.selectedCatNo] = $('#admin-cat-name').val();
+          view.renderElement.name(model.selectedCatNo);
+          $(".catNameButton[data-cat-no='" + model.selectedCatNo + "']").text(model.name[model.selectedCatNo]);
+          return $('.admin-control').hide();
+        });
+      },
+      fillAdminPanel: function() {
+        return view.renderAdminPanel(model.name[model.selectedCatNo], model.clicksCount[model.selectedCatNo], model.image[model.selectedCatNo]);
       }
     };
     view = {
@@ -66,7 +84,8 @@
         this.renderElement.buttons(catNames);
         this.renderCatDisplay(startIndex);
         controller.changeCatEvent();
-        return controller.changeClicksEvent();
+        controller.changeClicksEvent();
+        return controller.adminMode();
       },
       renderCatDisplay: function(indexToDisplay) {
         this.renderElement.name(indexToDisplay);
@@ -88,6 +107,11 @@
         clicks: function(indexToDisplay) {
           return $('.catClicks').text("Number of clicks: " + (controller.get('clicks', indexToDisplay)));
         }
+      },
+      renderAdminPanel: function(catName, catClicks, catImage) {
+        $('#admin-cat-name').val(catName);
+        $('#admin-cat-clicks').val(catClicks);
+        return $('#admin-cat-image').val(catImage);
       }
     };
     return view.init();

@@ -4,12 +4,11 @@
 }
 
 .admin-wrap .admin-control {
-  display: flex;
-  flex-direction: column;
   display: none;
 }
 
 .admin-wrap input {
+  display: block;
   width: 200px;
   margin-bottom: 20px;
 }
